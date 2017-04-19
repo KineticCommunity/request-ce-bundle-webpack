@@ -5,19 +5,25 @@
 
 <%-- Determine the location of the static folder --%>
 <c:choose>
-    <%-- Development mode --%>
+    <%-- DEVELOPMENT PROXY MODE --%>
     <c:when test="${pageContext.request.getHeader('X-Webpack-Bundle-Name') == param.bundleName}">
         <c:set var="staticLocation" value="/static"/>
     </c:when>
-    <%-- Development mode (legacy) --%>
+    <%-- DEVELOPMENT PROXY MODE (LEGACY) --%>
     <c:when test="${pageContext.request.getHeader('X-From-Webpack-Proxy') == 'X-From-Webpack-Proxy'}">
         <c:set var="staticLocation" value="/static"/>
     </c:when>
-    <%-- External assets --%>
-    <c:when test="${param.location != null}">
+    <%-- 
+        EXTERNAL ASSET MODE
+        queryString is set to the query string specified in the space/kapp/form display page 
+        property and NOT from the actual page URL.  Therefore, the queryString can be used to ensure
+        the location parameter was specified in the CE configuration and not by the page URL (which
+        would potentially allow an attacker craft a URL that would load a malicious bundle).
+    --%>
+    <c:when test="${param.location != null && pageContext.request.queryString.contains(param.location)}">
         <c:set var="staticLocation" value="${param.location}"/>
     </c:when>
-    <%-- Embedded assets --%>
+    <%-- EMBEDDED ASSET MODE --%>
     <c:otherwise>
         <c:set var="staticLocation" value="${bundle.location}/static"/>
     </c:otherwise>
@@ -29,6 +35,7 @@
         <app:headContent/>
     </head>
     <body>
+        ${pageContext.request.getParameterMap()}
         <div id='root'></div>
         <script>
             bundle.config = bundle.config || {};
