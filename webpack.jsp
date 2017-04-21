@@ -35,7 +35,6 @@
         <app:headContent/>
     </head>
     <body>
-        ${pageContext.request.getParameterMap()}
         <div id='root'></div>
         <script>
             bundle.config = bundle.config || {};
