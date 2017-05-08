@@ -10,7 +10,7 @@ In order to prepare a Request CE server to support client-side bundles, deploy t
 appropriate Kinetic Reqeust CE bundles directory, and configure a Kapp with the following settings:
 
 **Bundle Path:** `request-ce-bundle-webpack`  
-**Kapp Display Page:** `webpack.jsp?bundleName=NAME?location=LOCATION`  
+**Kapp Display Page:** `webpack.jsp?bundleName=NAME&location=LOCATION`  
 **Form Display Page:** `form.jsp`  
 **Form Confirmation Page:** `confirmation.jsp`  
 **Login Page:** `login.jsp`  
@@ -37,8 +37,8 @@ Kinetic Request CE locally.  This mode only requires that the *Kapp Display Page
 `webpack.jsp?name=NAME`.
 
 **External Asset Mode**  
-In this mode, the distribution files (*bundle.js* and other necessary assets produced by the 
-client-side bundle build process) are made available from an external location (such as a company 
+In this mode, the distribution files (files created in the *dist* directory after running 
+`yarn run build`) are made available from an external location (such as a company 
 webserver or Amazon s3).  These files can then be served to users and changes to the client-side 
 bundle can be applied at these locations without making changes to the Kinetic Request CE webserver.
 
@@ -48,10 +48,10 @@ parameter should be the fully qualified URL to the client-side dist files (such 
 `https://acme.com/bundles/catalog` or `https://s3.amazonaws.com/acme.com/bundles/catalog`).
 
 **Embedded Asset Mode**  
-In this mode, the distribution files (*bundle.js* and other necessary assets produced by the 
-client-side bundle build process) are made available directly from the server-side bundle.  These 
-files can then be served directly by the Kinetic Request CE server, which must be modified directly 
-whenever a change should be deployed.
+In this mode, the distribution files (files created in the *dist* directory after running 
+`yarn run build`) are made available directly from the server-side bundle.  These files can then be
+served directly by the Kinetic Request CE server, which must be modified directly whenever a change
+should be deployed.
 
 In order to configure a Kapp to use the *request-ce-bundle-webpack* bundle in this mode, a new 
 bundle should be created using the content of the *request-ce-bundle-webpack* bundle as a starting 
