@@ -34,7 +34,7 @@ This bundle can be used in three different modes:
 In this mode, a developer can configure a client-side webpack bundle on their own computer to use 
 the remote Kinetic Request CE server.  This allows the developer to develop bundles without running 
 Kinetic Request CE locally.  This mode only requires that the *Kapp Display Page* be set to 
-`webpack.jsp?name=NAME`.
+`webpack.jsp?bundleName=NAME`.
 
 **External Asset Mode**  
 In this mode, the distribution files (files created in the *dist* directory after running 
