@@ -6,11 +6,7 @@
 <%-- Determine the location of the static folder --%>
 <c:choose>
     <%-- DEVELOPMENT PROXY MODE --%>
-    <c:when test="${pageContext.request.getHeader('X-Webpack-Bundle-Name') == param.bundleName}">
-        <c:set var="staticLocation" value="/static"/>
-    </c:when>
-    <%-- DEVELOPMENT PROXY MODE (LEGACY) --%>
-    <c:when test="${pageContext.request.getHeader('X-From-Webpack-Proxy') == 'X-From-Webpack-Proxy'}">
+    <c:when test="${param.bundleName != null && pageContext.request.getHeader('X-Webpack-Bundle-Name') == param.bundleName}">
         <c:set var="staticLocation" value="/static"/>
     </c:when>
     <%-- 
