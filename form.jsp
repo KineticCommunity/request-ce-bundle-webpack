@@ -6,9 +6,21 @@
         <app:bodyContent/>
     </c:when>
     <c:when test="${submission == null}">
-        <c:redirect url="${bundle.kappPath}#/forms/${form.slug}"/>
+        <c:redirect url="${bundle.kappPath}#/forms/${form.slug}">
+            <c:forEach items="${pageContext.request.parameterMap}" var="entry">
+                <c:forEach items="${entry.value}" var="value">
+                    <c:param name="${entry.key}" value="${value}" />
+                </c:forEach>
+            </c:forEach>
+        </c:redirect>
     </c:when>
     <c:otherwise>
-        <c:redirect url="${bundle.kappPath}#/submissions/${submission.id}"/>
+        <c:redirect url="${bundle.kappPath}#/submissions/${submission.id}">
+            <c:forEach items="${pageContext.request.parameterMap}" var="entry">
+                <c:forEach items="${entry.value}" var="value">
+                    <c:param name="${entry.key}" value="${value}" />
+                </c:forEach>
+            </c:forEach>
+        </c:redirect>
     </c:otherwise>
 </c:choose>
