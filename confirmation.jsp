@@ -1,11 +1,9 @@
-<%@page pageEncoding="UTF-8" contentType="text/html" trimDirectiveWhitespaces="true"%>
-<%@taglib prefix="app" uri="http://kineticdata.com/taglibs/core/app" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:choose>
-    <c:when test="${param.embedded != null}">
-        <app:bodyContent/>
-    </c:when>
-    <c:otherwise>
-        <c:redirect url="${bundle.kappPath}#/submissions/${submission.id}"/>
-    </c:otherwise>
-</c:choose>
+<%-- 
+    DELEGATE RENDERING TO FORM.JSP
+
+    This file is included to support the application default values, but form.jsp should contain
+    all of the logic to render an embedded form page (whether it is a confirmation page or not).
+--%>
+<% 
+    request.getRequestDispatcher("form.jsp").forward(request, response); 
+%>
