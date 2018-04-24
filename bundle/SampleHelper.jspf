@@ -1,0 +1,15 @@
+<%@page import="com.kineticdata.core.web.bundles.Bundle"%>
+<%!
+    public static class SampleHelper {
+        private Bundle bundle;
+
+        public SampleHelper(HttpServletRequest request) {
+            bundle = (Bundle)request.getAttribute("bundle");
+        }
+
+        public String greet(String name) {
+            bundle.getLogger().info("Greeting \""+name+"\".");
+            return "Hello "+name+"!";
+        }
+    }
+%>

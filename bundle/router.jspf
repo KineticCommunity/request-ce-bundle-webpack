@@ -1,0 +1,45 @@
+<%@page import="java.nio.file.Paths"%>
+<%@page import="java.nio.file.Files"%>
+<%@page import="com.kineticdata.core.web.bundles.Bundle"%>
+
+<%-- CALLBACK ROUTING --%>
+<%
+    if (request.getParameter("callback") != null) {
+        // Obtain a reference to the bundle
+        Bundle bundle = (Bundle)request.getAttribute("bundle");
+        // Determine the callback jsp path
+        String delegateJsp = bundle.getPath()+"/callbacks/"+request.getParameter("callback")+".jsp";
+        // Ensure that the specified path matches the "normalized" path and that '..' can't be used
+        // to include unintended file contents
+        String normalizedPath = new java.net.URI(delegateJsp).normalize().toString();
+        
+        // If the specified delegate JSP is not using a "normalized" form
+        if (!delegateJsp.equals(normalizedPath)) {
+            // Respond with 404 not found
+            response.setStatus(response.SC_NOT_FOUND);
+            request.setAttribute("javax.servlet.error.message", delegateJsp);
+            request.getRequestDispatcher("/WEB-INF/pages/404.jsp").forward(request, response);
+        }
+        // If the specified delegate JSP is using a normalized form
+        else {
+            // Attempt to render the contents of the jsp
+            try {
+                request.getRequestDispatcher(delegateJsp).forward(request, response);
+            }
+            // If there was a preblem rendering the contents of the JSP
+            catch (ServletException e) {
+                // If the callback doesn't exist
+                if (!Files.exists(Paths.get(application.getRealPath(delegateJsp)))) {
+                    // Respond with 404 not found
+                    response.setStatus(response.SC_NOT_FOUND);
+                    request.setAttribute("javax.servlet.error.message", delegateJsp);
+                    request.getRequestDispatcher("/WEB-INF/pages/404.jsp").forward(request, response);
+                }
+                // Otherwise rethrow the error
+                throw e;
+            }
+        }
+        // Return so that no further JSP processing occurs
+        return;
+    }
+%>

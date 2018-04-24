@@ -1,9 +1,9 @@
-<%-- 
-    DELEGATE RENDERING TO FORM.JSP
+<%--
+    DELEGATE RENDERING TO SPA.JSP
 
-    This file is included to support the application default values, but form.jsp should contain
-    all of the logic to render an embedded form page (whether it is a confirmation page or not).
+    This file is included to support the application default values, and will display the webpack
+    configuration instructions if the display is not configured properly.
 --%>
-<% 
-    request.getRequestDispatcher("form.jsp").forward(request, response); 
+<%
+    request.getRequestDispatcher("spa.jsp").forward(request, response);
 %>
