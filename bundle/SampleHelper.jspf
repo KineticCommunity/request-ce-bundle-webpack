@@ -1,15 +1,24 @@
 <%@page import="com.kineticdata.core.web.bundles.Bundle"%>
+<%@page import="com.kineticdata.core.models.Space"%>
 <%!
     public static class SampleHelper {
         private Bundle bundle;
+        private Space space;
 
         public SampleHelper(HttpServletRequest request) {
             bundle = (Bundle)request.getAttribute("bundle");
+            space = (Space)request.getAttribute("space");
         }
 
         public String greet(String name) {
+            // Determine what to use for a greeting
+            String greeting = space.hasAttribute("Sample Helper Greeting")
+                ? space.getAttributeValue("Sample Helper Greeting")
+                : "Hello";
+            // Log the call
             bundle.getLogger().info("Greeting \""+name+"\".");
-            return "Hello "+name+"!";
+            // Return the resulting message
+            return greeting+" "+name+", welcome to the "+space.getName()+" space!";
         }
     }
 %>
