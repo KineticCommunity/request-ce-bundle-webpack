@@ -1,10 +1,49 @@
 <%@page pageEncoding="UTF-8" contentType="text/html" trimDirectiveWhitespaces="true" %>
+<%@page import="java.net.*"%>
+<%@page import="java.util.*"%>
 <%@include file="bundle/initialization.jspf" %>
 <%@include file="bundle/router.jspf" %>
 
-<%--
-    DETERMINE SPA ROUTING
+<%-- 
+    DETERMINE ROUTING
+    
+    Note: When an implementation is using a single bundle (ie the kapps use the same webpack bundle
+    as th espace), this JSP will also be used for the Kapp and Form display pages.
 --%>
+<%
+    StringBuilder spaClientParams = new StringBuilder();
+    StringBuilder spaServerParams = new StringBuilder();
+    String encoding = response.getCharacterEncoding();
+    for (Map.Entry<String,String[]> entry : request.getParameterMap().entrySet()) {
+        if ("debugjs".equals(entry.getKey())) {
+            if (entry.getValue() == null || entry.getValue().length == 0 || entry.getValue()[0] == "") {
+                spaServerParams.append((spaServerParams.length() == 0) ? "?" : "&");
+                spaServerParams.append(URLEncoder.encode(entry.getKey(), encoding));
+            } else {
+                for (int i=0;i<entry.getValue().length;i++) {
+                    spaServerParams.append((spaServerParams.length() == 0) ? "?" : "&");
+                    spaServerParams.append(URLEncoder.encode(entry.getKey(), encoding));
+                    spaServerParams.append("=");
+                    spaServerParams.append(URLEncoder.encode(entry.getValue()[i], encoding));
+                }
+            }
+        } else {
+            if (entry.getValue() == null || entry.getValue().length == 0 || entry.getValue()[0] == "") {
+                spaClientParams.append((spaClientParams.length() == 0) ? "?" : "&");
+                spaClientParams.append(URLEncoder.encode(entry.getKey(), encoding));
+            } else {
+                for (int i=0;i<entry.getValue().length;i++) {
+                    spaClientParams.append((spaClientParams.length() == 0) ? "?" : "&");
+                    spaClientParams.append(URLEncoder.encode(entry.getKey(), encoding));
+                    spaClientParams.append("=");
+                    spaClientParams.append(URLEncoder.encode(entry.getValue()[i], encoding));
+                }
+            }
+        }
+    }
+    request.setAttribute("spaClientParams", spaClientParams.toString());
+    request.setAttribute("spaServerParams", spaServerParams.toString());
+%>
 <c:choose>
     <%--
         EMBEDDED FORM
@@ -13,87 +52,50 @@
     <c:when test="${param.embedded != null}">
         <app:bodyContent/>
     </c:when>
-    <%--
+    <%-- 
         DATASTORE SUBMISSION REDIRECT
         If the request is for a datastore submission, redirect to the standardized fragment path.
     --%>
     <c:when test="${submission != null && kapp == null}">
-        <c:redirect url="${bundle.spacePath}/#/datastore/forms/${submission.datastore.slug}/submissions/${submission.id}">
-            <c:forEach items="${pageContext.request.parameterMap}" var="entry">
-                <c:forEach items="${entry.value}" var="value">
-                    <c:param name="${entry.key}" value="${value}" />
-                </c:forEach>
-            </c:forEach>
-        </c:redirect>
+        <c:redirect url="${bundle.spacePath}/${spaServerParams}#/datastore/forms/${submission.datastore.slug}/submissions/${submission.id}${spaClientParams}"/>
     </c:when>
-    <%--
+    <%-- 
         DATASTORE FORM REDIRECT
         If the request is for a form, redirect to the standardized fragment path.
     --%>
     <c:when test="${form != null && kapp == null}">
-        <c:redirect url="${bundle.spacePath}/#/datastore/forms/${form.slug}">
-            <c:forEach items="${pageContext.request.parameterMap}" var="entry">
-                <c:forEach items="${entry.value}" var="value">
-                    <c:param name="${entry.key}" value="${value}" />
-                </c:forEach>
-            </c:forEach>
-        </c:redirect>
+        <c:redirect url="${bundle.spacePath}/${spaServerParams}#/datastore/forms/${form.slug}${spaClientParams}"/>
     </c:when>
-    <%--
+    <%-- 
         SUBMISSION REDIRECT
         If the request is for a submission, redirect to the standardized fragment path.
     --%>
-    <c:when test="${submission != null}">
-        <c:redirect url="${bundle.spacePath}/#/kapps/${submission.form.kapp.slug}/forms/${submission.form.slug}/submissions/${submission.id}">
-            <c:forEach items="${pageContext.request.parameterMap}" var="entry">
-                <c:forEach items="${entry.value}" var="value">
-                    <c:param name="${entry.key}" value="${value}" />
-                </c:forEach>
-            </c:forEach>
-        </c:redirect>
+    <c:when test="${submission != null && kapp != null}">
+        <c:redirect url="${bundle.spacePath}/${spaServerParams}#/kapps/${submission.form.kapp.slug}/forms/${submission.form.slug}/submissions/${submission.id}${spaClientParams}"/>
     </c:when>
-    <%--
+    <%-- 
         FORM REDIRECT
         If the request is for a form, redirect to the standardized fragment path.
     --%>
-    <c:when test="${form != null}">
-        <c:redirect url="${bundle.spacePath}/#/kapps/${form.kapp.slug}/forms/${form.slug}">
-            <c:forEach items="${pageContext.request.parameterMap}" var="entry">
-                <c:forEach items="${entry.value}" var="value">
-                    <c:param name="${entry.key}" value="${value}" />
-                </c:forEach>
-            </c:forEach>
-        </c:redirect>
+    <c:when test="${form != null && kapp != null}">
+        <c:redirect url="${bundle.spacePath}/${spaServerParams}#/kapps/${form.kapp.slug}/forms/${form.slug}${spaClientParams}"/>
     </c:when>
-    <%--
+    <%-- 
         KAPP REDIRECT
         If the request is for a kapp, redirect to the standardized fragment path.
     --%>
     <c:when test="${kapp != null}">
-        <c:redirect url="${bundle.spacePath}/#/kapps/${kapp.slug}">
-            <c:forEach items="${pageContext.request.parameterMap}" var="entry">
-                <c:forEach items="${entry.value}" var="value">
-                    <c:param name="${entry.key}" value="${value}" />
-                </c:forEach>
-            </c:forEach>
-        </c:redirect>
+        <c:redirect url="${bundle.spacePath}/${spaServerParams}#/kapps/${kapp.slug}${spaClientParams}"/>
     </c:when>
-    <%--
+    <%-- 
         SPACE REDIRECT (non-canonical)
         If the request is for a space, redirect to the standardized fragment path.
     --%>
     <c:when test="${
         !pageContext.request.getAttribute('javax.servlet.forward.request_uri').endsWith('/')
-        || pageContext.request.getAttribute('javax.servlet.forward.query_string') != null
+        || spaClientParams != ''
     }">
-        <c:choose>
-            <c:when test="${pageContext.request.getAttribute('javax.servlet.forward.query_string') == null}">
-                <c:redirect url="${bundle.spacePath}/#/"/>
-            </c:when>
-            <c:otherwise>
-                <c:redirect url="${bundle.spacePath}/#/?${pageContext.request.getAttribute('javax.servlet.forward.query_string')}"/>
-            </c:otherwise>
-        </c:choose>
+        <c:redirect url="${bundle.spacePath}/${spaServerParams}#/${spaClientParams}"/>
     </c:when>
     <%--
         RENDERING HTML AND CLIENTSIDE BUNDLE
