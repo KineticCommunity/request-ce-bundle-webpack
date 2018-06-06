@@ -54,4 +54,4 @@ When using this bundle with a Space configured with the `Single Page App` displa
 5. `/#/kapps/:slug/forms/:slug/submissions/:id`
 6. `/#/kapps/:slug`
 
-For a fully functional example of a client-side bundle, see the  [request-ce-bundle-kinops](https://github.com/kineticdata/request-ce-bundle-kinops) repository.
+For a fully functional example of a client-side bundle, see the  [request-ce-bundle-kinetic](https://github.com/kineticdata/request-ce-bundle-kinetic) repository.
