@@ -14,8 +14,23 @@
     StringBuilder spaClientParams = new StringBuilder();
     StringBuilder spaServerParams = new StringBuilder();
     String encoding = response.getCharacterEncoding();
+
+    // Build the map of parameters specified by the Display Page value (ie the parameters not 
+    // specified by the originating request, such as location=https://s3.amazonaws.com/...).
+    // These values should not be included as server-side or client-side parameters.
+    Set<String> systemParameters = new HashSet<>();
+    if (request.getQueryString() != null) {
+        String[] parameterTuples = request.getQueryString().split("&");
+        for (int i=0;i<parameterTuples.length;i++) {
+            String[] parameterSegment = parameterTuples[i].split("=", 2);
+            systemParameters.add(parameterSegment[0]);
+        }
+    }
+
     for (Map.Entry<String,String[]> entry : request.getParameterMap().entrySet()) {
-        if ("debugjs".equals(entry.getKey())) {
+        if (systemParameters.contains(entry.getKey())) {
+            // No-op
+        } else if ("debugjs".equals(entry.getKey())) {
             if (entry.getValue() == null || entry.getValue().length == 0 || entry.getValue()[0] == "") {
                 spaServerParams.append((spaServerParams.length() == 0) ? "?" : "&");
                 spaServerParams.append(URLEncoder.encode(entry.getKey(), encoding));
