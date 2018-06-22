@@ -19,7 +19,13 @@
     // specified by the originating request, such as location=https://s3.amazonaws.com/...).
     // These values should not be included as server-side or client-side parameters.
     Set<String> systemParameters = new HashSet<>();
-    if (request.getQueryString() != null) {
+    // If there is a query string, and that string is different than the forwarded query string
+    // (in which case request.getQueryString() will be the query string defined by the Display
+    // Page value)
+    if (
+        request.getQueryString() != null
+        && !request.getQueryString().equals(request.getAttribute("javax.servlet.forward.query_string"))
+    ) {
         String[] parameterTuples = request.getQueryString().split("&");
         for (int i=0;i<parameterTuples.length;i++) {
             String[] parameterSegment = parameterTuples[i].split("=", 2);
