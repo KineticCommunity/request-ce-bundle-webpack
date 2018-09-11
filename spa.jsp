@@ -165,6 +165,13 @@
             <body>
                 <%-- Determine what to render --%>
                 <c:choose>
+                    <%-- FORCE SSO LOGIN REDIRECT WHEN SAML IS ENABLED AND USER IS NOT AUTHENTICATED --%>
+                    <c:when test="${identity.authenticated eq false && hasSAML eq true}">
+                        <script>
+                            window.location.href = "app/oauth/authorize?grant_type=implicit&response_type=token&client_id=bundle-ui&state=" 
+                                + encodeURIComponent(window.location.hash.replace(/^#/, ""));
+                        </script>
+                    </c:when>
                     <%-- WEBPACK BUNDLE SCAFFOLDING --%>
                     <c:when test="${staticLocation != null}">
                         <div id='root'></div>
