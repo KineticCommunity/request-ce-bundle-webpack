@@ -132,6 +132,7 @@
                 (param.bundleName == null && pageContext.request.getHeader('X-Webpack-Kinetic-Webserver') != null)
             }">
                 <c:set var="staticLocation" value="/static"/>
+				
             </c:when>
             <%--
                 EXTERNAL ASSET MODE
@@ -173,10 +174,14 @@
                         </script>
                     </c:when>
                     <%-- WEBPACK BUNDLE SCAFFOLDING --%>
+					<div id='root'></div>
+					<c:set var="loginPopup" value="${not empty hasLoginPopup and hasLoginPopup ? 'true' : 'false'}" />
+					<script>
+						bundle.config = bundle.config || {};
+						bundle.config.loginPopup = ${loginPopup};
+					</script>
                     <c:when test="${staticLocation != null}">
-                        <div id='root'></div>
                         <script>
-                            bundle.config = bundle.config || {};
                             bundle.config.staticLocation = '${text.escapeJs(staticLocation)}';
                         </script>
                         <script src="${text.escape(staticLocation)}/bundle.js"></script>
